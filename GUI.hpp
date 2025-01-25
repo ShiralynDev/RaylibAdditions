@@ -101,4 +101,19 @@ namespace RaylibAdditions {
 
         std::unordered_map<std::string, std::variant<bool, int, std::string>> loadSettingsFromFileToMap(std::string path); // For loading to game not as a menu but applied setting
     }
+
+    class ScrollingMenu {
+        private:
+        int selectedText = 0;
+        const std::vector<std::string> options;
+        const Color textColor = BLACK;
+        const Color selectedColor = BLACK;
+        const float textSize = 10;
+        const float selectedTextSize = 15;
+
+        public:
+        ScrollingMenu(std::vector<std::string> texts, Color textColor, Color selectedColor, float textSize, float selectedTextSize) : options(texts), textColor(textColor), selectedColor(selectedColor), textSize(textSize), selectedTextSize(selectedTextSize) {};
+
+        int drawAndUpdate(Sound* optionChangeSound = nullptr, bool drawWithoutUpdate = false);
+    };
 }
