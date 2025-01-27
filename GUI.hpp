@@ -104,6 +104,7 @@ namespace RaylibAdditions {
 
     class ScrollingMenu {
         private:
+        float lastGamepadAxis = 0;
         int selectedText = 0;
         const std::vector<std::string> options;
         const Color textColor = BLACK;
@@ -114,6 +115,6 @@ namespace RaylibAdditions {
         public:
         ScrollingMenu(std::vector<std::string> texts, Color textColor, Color selectedColor, float textSize, float selectedTextSize) : options(texts), textColor(textColor), selectedColor(selectedColor), textSize(textSize), selectedTextSize(selectedTextSize) {};
 
-        int drawAndUpdate(Sound* optionChangeSound = nullptr, bool drawWithoutUpdate = false);
+        int drawAndUpdate(Sound* optionChangeSound = nullptr, int gamepad = -1, bool drawWithoutUpdate = false);
     };
 }

@@ -547,7 +547,7 @@ void RaylibAdditions::Menu::Menu::saveSettingsToFile(std::string path) {
     settingsFile.close();
 }
 
-int RaylibAdditions::ScrollingMenu::drawAndUpdate(Sound* optionChangeSound, bool drawWithoutUpdate) {
+int RaylibAdditions::ScrollingMenu::drawAndUpdate(Sound* optionChangeSound, int gamepad, bool drawWithoutUpdate) {
 	 for (int i = 0; i < options.size(); i++) {
 		if (i == selectedText) {
 			DrawText(options.at(i).c_str(), 10, ((1080 / options.size()) * i) + 37.5, selectedTextSize, selectedColor);
@@ -556,7 +556,9 @@ int RaylibAdditions::ScrollingMenu::drawAndUpdate(Sound* optionChangeSound, bool
 		DrawText(options.at(i).c_str(), 10, ((1080/options.size()) * i) + 25, textSize, textColor);
     }
 
-	if (IsKeyPressed(KEY_W) && !drawWithoutUpdate || IsKeyPressed(KEY_UP) && !drawWithoutUpdate) {
+	float gamepadJoystick = GetGamepadAxisMovement(gamepad, 1);
+
+	if (IsKeyPressed(KEY_W) && !drawWithoutUpdate || IsKeyPressed(KEY_UP) && !drawWithoutUpdate || gamepadJoystick < -0.5 && lastGamepadAxis > -0.5 && !drawWithoutUpdate) {
 		
 		if (optionChangeSound != nullptr)
 			PlaySound(*(optionChangeSound));
@@ -568,7 +570,7 @@ int RaylibAdditions::ScrollingMenu::drawAndUpdate(Sound* optionChangeSound, bool
 		}
 	}
 
-	if (IsKeyPressed(KEY_S) && !drawWithoutUpdate || IsKeyPressed(KEY_DOWN) && !drawWithoutUpdate) {
+	if (IsKeyPressed(KEY_S) && !drawWithoutUpdate || IsKeyPressed(KEY_DOWN) && !drawWithoutUpdate || gamepadJoystick > 0.5 && lastGamepadAxis < 0.5 && !drawWithoutUpdate) {
 		
 		if (optionChangeSound != nullptr)
 			PlaySound(*(optionChangeSound));
@@ -579,6 +581,8 @@ int RaylibAdditions::ScrollingMenu::drawAndUpdate(Sound* optionChangeSound, bool
 			selectedText++;
 		}
 	}
+
+	lastGamepadAxis = gamepadJoystick;
 
 	return selectedText;
 }
