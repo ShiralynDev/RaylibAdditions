@@ -106,7 +106,7 @@ namespace RaylibAdditions {
         private:
         float lastGamepadAxis = 0;
         int selectedText = 0;
-        const std::vector<std::string> options;
+        std::vector<std::string> options;
         const Color textColor = BLACK;
         const Color selectedColor = BLACK;
         const float textSize = 10;
@@ -116,5 +116,6 @@ namespace RaylibAdditions {
         ScrollingMenu(std::vector<std::string> texts, Color textColor, Color selectedColor, float textSize, float selectedTextSize) : options(texts), textColor(textColor), selectedColor(selectedColor), textSize(textSize), selectedTextSize(selectedTextSize) {};
 
         int drawAndUpdate(Sound* optionChangeSound = nullptr, int gamepad = -1, bool drawWithoutUpdate = false);
+        void updateOptions(std::vector<std::string> newOptions) { options = newOptions; };
     };
 }
