@@ -113,10 +113,8 @@ RaylibAdditions::LoadedRoomClass RaylibAdditions::RoomClass::loadRoom(std::strin
 }
 
 RaylibAdditions::LoadedRoomClass RaylibAdditions::RoomClass::unloadRoom(RaylibAdditions::LoadedRoomClass room) {
-	for (auto& frame : room.frames) {
-		for (auto& texture : room.textures) {
-			UnloadTexture(texture.second);
-		}
+	for (auto& texture : room.textures) {
+		UnloadTexture(texture.second);
 	}
 
 	for (auto& button : room.Buttons) {
