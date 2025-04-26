@@ -120,7 +120,7 @@ void RaylibAdditions::updateButtonstates(std::unordered_map<std::string, ButtonC
 	}
 }
 
-void RaylibAdditions::updateButtonstates(ButtonClass* button) {
+void RaylibAdditions::updateButtonstate(ButtonClass* button) {
 	if (CheckCollisionPointRec(GetMousePosition(), button->rect)) {
 		button->state = 1;
 		if (IsMouseButtonPressed(0)) {
