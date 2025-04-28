@@ -102,7 +102,7 @@ void RaylibAdditions::updateButtonstates(std::unordered_map<std::string, ButtonC
 		auto it = std::next(buttons->begin(), i);
 		if (CheckCollisionPointRec(GetMousePosition(), it->second.rect)) {
 			it->second.state = 1;
-			if (IsMouseButtonPressed(0)) {
+			if (IsMouseButtonDown(0)) {
 				it->second.state = 2;
 				if(IsSoundValid(it->second.pressedSound))
 					PlaySound(it->second.pressedSound);
@@ -118,7 +118,7 @@ void RaylibAdditions::updateButtonstates(std::unordered_map<std::string, ButtonC
 		auto it = std::next(buttons->begin(), i);
 		if (CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), *(camera)), it->second.rect)) {
 			it->second.state = 1;
-			if (IsMouseButtonPressed(0)) {
+			if (IsMouseButtonDown(0)) {
 				it->second.state = 2;
 				if(IsSoundValid(it->second.pressedSound))
 					PlaySound(it->second.pressedSound);
@@ -132,7 +132,7 @@ void RaylibAdditions::updateButtonstates(std::unordered_map<std::string, ButtonC
 void RaylibAdditions::updateButtonstate(ButtonClass* button) {
 	if (CheckCollisionPointRec(GetMousePosition(), button->rect)) {
 		button->state = 1;
-		if (IsMouseButtonPressed(0)) {
+		if (IsMouseButtonDown(0)) {
 			button->state = 2;
 			if(IsSoundValid(button->pressedSound))
 				PlaySound(button->pressedSound);
