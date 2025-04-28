@@ -129,6 +129,20 @@ void RaylibAdditions::updateButtonstates(std::unordered_map<std::string, ButtonC
 	}
 }
 
+void RaylibAdditions::updateButtonstate(ButtonClass* button) {
+	if (CheckCollisionPointRec(GetMousePosition(), button->rect)) {
+		button->state = 1;
+		if (IsMouseButtonPressed(0)) {
+			button->state = 2;
+			if(IsSoundValid(button->pressedSound))
+				PlaySound(button->pressedSound);
+		}
+	}
+	else
+		button->state = 0;
+}
+
+
 Camera2D RaylibAdditions::createCamera() {
 	Camera2D camera{};
 	camera.target = Vector2{ 0, 0 };
