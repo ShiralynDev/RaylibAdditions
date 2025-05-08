@@ -129,10 +129,14 @@ void RaylibAdditions::updateButtonstates(std::unordered_map<std::string, ButtonC
 	}
 }
 
-void RaylibAdditions::updateButtonstate(ButtonClass* button) {
+void RaylibAdditions::updateButtonstate(ButtonClass* button, bool useIsMouseDown) {
 	if (CheckCollisionPointRec(GetMousePosition(), button->rect)) {
 		button->state = 1;
-		if (IsMouseButtonDown(0)) {
+		if (!useIsMouseDown && IsMouseButtonPressed(0)) {
+			button->state = 2;
+			if(IsSoundValid(button->pressedSound))
+				PlaySound(button->pressedSound);
+		} else if (useIsMouseDown && IsMouseButtonDown(0)) {
 			button->state = 2;
 			if(IsSoundValid(button->pressedSound))
 				PlaySound(button->pressedSound);
