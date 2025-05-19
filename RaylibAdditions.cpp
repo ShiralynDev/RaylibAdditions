@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <typeinfo>
+#include <math.h>
 
 void RaylibAdditions::drawTextLeftCenterRect(Rectangle &rect, std::string &text, int fontSize, Color color) {
 	DrawText(text.c_str(),
@@ -250,5 +251,112 @@ void RaylibAdditions::DrawClass::drawList() {
 
 		}
 	}
+}
 
+void RaylibAdditions::SpeedometerClass::drawSpeedometer() {
+	int shortestDiameter = 0;
+	if (place.height >= place.width) 
+		shortestDiameter = place.width; 
+	else 
+		shortestDiameter = place.height;
+
+	Vector2 midPoint = {place.width/2 + place.x, place.height/2 + place.y};
+	// add z var; add segments var instead of indents; add color var;
+	DrawTextEx(GetFontDefault(), text.c_str(), {midPoint.x - MeasureTextEx(GetFontDefault(), text.c_str(), 10, 2).x/2, midPoint.y - 20}, 10, 2, color);
+	DrawRingLines(midPoint, shortestDiameter/2 - 5, shortestDiameter/2, startAngel, stopAngel, segments, color);
+
+	for (int i = 0; i < indents; ++i) {
+		float t = (float)i / (indents - 1);
+		float angleDeg = startAngel + t * (stopAngel - startAngel);
+		float angleRad = angleDeg * (M_PI / 180.0f);
+
+		float indentWidth = 2;
+		float indentHeight = 8;
+
+		float indentRadius = ((shortestDiameter - 5) / 2);
+        float indentX = midPoint.x + cos(angleRad) * indentRadius;
+        float indentY = midPoint.y + sin(angleRad) * indentRadius;
+		DrawRectanglePro({indentX, indentY, indentWidth, indentHeight}, {indentWidth / 2, indentHeight / 2}, angleDeg + 90.0, RED);
+		
+		int indentValue = ((heighestValue - lowestValue) / float(indents - 1.0)) * i + lowestValue;
+		std::string indentValueString = std::to_string(indentValue);
+		float textRadius = indentRadius - 10;
+		Vector2 textPos = {midPoint.x + cos(angleRad) * textRadius, midPoint.y + sin(angleRad) * textRadius};
+		Font font = GetFontDefault();
+		float fontSize = 10;
+		float spacing = 2;
+		Vector2 textSize = MeasureTextEx(font, indentValueString.c_str(), fontSize, spacing);
+		DrawTextPro(font, indentValueString.c_str(), {textPos.x, textPos.y}, {textSize.x / 2, textSize.y / 2}, angleDeg + 90.0f, fontSize, spacing, color);
+	}
+
+	float valuePos = (value - lowestValue) / (heighestValue - lowestValue);
+	float angleDeg = startAngel + valuePos * (stopAngel - startAngel);
+	float angleRad = (angleDeg + 90.0f) * (M_PI / 180.0f);
+	float radius = (shortestDiameter / 2 - 5) + 10;
+	float triangleSize = 5.0f;
+	Vector2 p1 = {0, -radius};
+	Vector2 p2 = {-triangleSize, triangleSize};
+	Vector2 p3 = {triangleSize, triangleSize};
+
+	auto rotatePoint = [](Vector2 pt, float angle) -> Vector2 {
+		return {
+			pt.x * cos(angle) - pt.y * sin(angle),
+			pt.x * sin(angle) + pt.y * cos(angle)
+		};
+	};
+
+	Vector2 r1 = {
+		midPoint.x + rotatePoint(p1, angleRad).x,
+		midPoint.y + rotatePoint(p1, angleRad).y
+	};
+	Vector2 r2 = {
+		midPoint.x + rotatePoint(p2, angleRad).x,
+		midPoint.y + rotatePoint(p2, angleRad).y
+	};
+	Vector2 r3 = {
+		midPoint.x + rotatePoint(p3, angleRad).x,
+		midPoint.y + rotatePoint(p3, angleRad).y
+	};
+	
+	DrawTriangle(r1, r2, r3, needleColor);
+}
+
+void RaylibAdditions::SpeedometerClass::drawNeedle(Color needle, float needleValue, float lenghtProcentage) {
+	int shortestDiameter = 0;
+	if (place.height >= place.width) 
+		shortestDiameter = place.width; 
+	else 
+		shortestDiameter = place.height;
+	
+	Vector2 midPoint = {place.width/2 + place.x, place.height/2 + place.y};
+	float valuePos = (needleValue - lowestValue) / (heighestValue - lowestValue);
+	float angleDeg = startAngel + valuePos * (stopAngel - startAngel);
+	float angleRad = (angleDeg + 90.0f) * (M_PI / 180.0f);
+	float radius = (shortestDiameter / 2 - 5) + 10;
+	float triangleSize = 5.0f;
+	Vector2 p1 = {0, -radius * lenghtProcentage};
+	Vector2 p2 = {-triangleSize, triangleSize};
+	Vector2 p3 = {triangleSize, triangleSize};
+
+	auto rotatePoint = [](Vector2 pt, float angle) -> Vector2 {
+		return {
+			pt.x * cos(angle) - pt.y * sin(angle),
+			pt.x * sin(angle) + pt.y * cos(angle)
+		};
+	};
+
+	Vector2 r1 = {
+		midPoint.x + rotatePoint(p1, angleRad).x,
+		midPoint.y + rotatePoint(p1, angleRad).y
+	};
+	Vector2 r2 = {
+		midPoint.x + rotatePoint(p2, angleRad).x,
+		midPoint.y + rotatePoint(p2, angleRad).y
+	};
+	Vector2 r3 = {
+		midPoint.x + rotatePoint(p3, angleRad).x,
+		midPoint.y + rotatePoint(p3, angleRad).y
+	};
+	
+	DrawTriangle(r1, r2, r3, needle);
 }

@@ -83,6 +83,28 @@ namespace RaylibAdditions { // Define classes here
 		void clearList();
 		void drawList();
 	};
+
+	class SpeedometerClass {
+		private:
+			const float lowestValue = 0.0;
+			const float heighestValue = 10.0;
+			const int startAngel = 0; // from right
+			const int stopAngel = 180;
+			const int indents = 5;
+			const int segments = 20;
+			const Rectangle place;
+			const std::string text;
+			const Color color;
+			const Color needleColor;
+		public:
+			float value = 0.0;
+
+			SpeedometerClass(Rectangle place, float lowestValue, float heighestValue, int startAngel, int stopAngel, int indents, std::string text, Color color, Color needleColor) 
+			: place(place), lowestValue(lowestValue), heighestValue(heighestValue), startAngel(startAngel), stopAngel(stopAngel), indents(indents), text(text), color(color), needleColor(needleColor) {}
+	
+			void drawSpeedometer();
+			void drawNeedle(Color needle, float needleValue, float lenghtProcentage); // draws an extra needle
+	};
 }
 
 namespace RaylibAdditions { // Define functions here
