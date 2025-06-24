@@ -22,6 +22,12 @@ namespace RaylibAdditions { // Define classes here
 			SetWindowMonitor(monitor);
 		};
 
+		WindowClass(std::string windowTitle, Vector2 windowSize, int monitor = 0) 
+		: title(windowTitle), width(windowSize.x), height(windowSize.y) {
+			InitWindow(width, height, title.c_str());
+			SetWindowMonitor(monitor);
+		};
+
 		~WindowClass() {
 			CloseWindow();
 		}
@@ -139,7 +145,9 @@ namespace RaylibAdditions { // Define functions here
 	// Creates a normal Camera2D
 	Camera2D createCamera();
 	// Creates camera zooming into game area using getScreenHeight()
-	Camera2D createCamera(int gameHeight);
+	Camera2D createCamera(Vector2 targetArea);
+	// Updates the zoom of a camera using height and width trying to keep a 16:9 aspect ratio
+	void updateCamera(Camera2D* camera, Vector2 targetArea);
 	// Draws an FPS counter at the position supplied 1 = top left, 2 = top middle, 3 = top right, 4 = middle left and so on
 	void drawFPSCounter(int position, int fontSize, Color color);
 }

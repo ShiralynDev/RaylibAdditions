@@ -157,13 +157,35 @@ Camera2D RaylibAdditions::createCamera() {
 	return camera;
 }
 
-Camera2D RaylibAdditions::createCamera(int gameHeight) {
+Camera2D RaylibAdditions::createCamera(Vector2 targetArea) {
 	Camera2D camera{};
 	camera.target = Vector2{ 0, 0 };
 	camera.offset = Vector2{ 0, 0 };
 	camera.rotation = 0.0f;
-	camera.zoom = float(GetScreenHeight()) / float(gameHeight);
+
+	float screenWidth = float(GetScreenWidth());
+	float screenHeight = float(GetScreenHeight());
+
+	float screenAspect = screenWidth / screenHeight;
+	float targetAspect = targetArea.x / targetArea.y;
+	if (screenAspect < targetAspect)
+		camera.zoom = screenWidth / targetArea.x; 
+	else
+		camera.zoom = screenHeight / targetArea.y;
+
 	return camera;
+}
+
+void RaylibAdditions::updateCamera(Camera2D* camera, Vector2 targetArea) {
+	float screenWidth = float(GetScreenWidth());
+	float screenHeight = float(GetScreenHeight());
+
+	float screenAspect = screenWidth / screenHeight;
+	float targetAspect = targetArea.x / targetArea.y;
+	if (screenAspect < targetAspect)
+		camera->zoom = screenWidth / targetArea.x; 
+	else
+		camera->zoom = screenHeight / targetArea.y;
 }
 
 void RaylibAdditions::drawFPSCounter(int position, int fontSize, Color color) {
