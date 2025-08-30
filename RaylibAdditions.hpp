@@ -55,6 +55,8 @@ namespace RaylibAdditions { // Define classes here
 		Sound pressedSound;
 		Sound releasedSound;
 
+		void updateState();
+
 		ButtonClass(Rectangle buttonRect, std::string buttonText, int buttonTextSize, Color buttonColor, Color buttonOutlineColor, Color buttonTextColor, int buttonOutlineThickness, float buttonScale, Sound buttonPressedSound = Sound(), Sound buttonReleasedSound = Sound(), int buttonState = 0)
 		: rect(buttonRect), text(buttonText), textSize(buttonTextSize), color(buttonColor), outlineColor(buttonOutlineColor), textColor(buttonTextColor), outlineThickness(buttonOutlineThickness), scale(buttonScale), state(buttonState), pressedSound(buttonPressedSound), releasedSound(buttonReleasedSound) {}
 	};
@@ -132,6 +134,8 @@ namespace RaylibAdditions { // Define functions here
 	void drawRectWOutlineWTextCenterTop(Rectangle& rect, float lineThick, Color rectColor, Color outlineColor, std::string& text, int fontSize, Color textColor);
 	// Draws a Rectangle with an outline and text using custom text args
 	void drawRectWOutlineWText(Rectangle& rect, float lineThick, Color rectColor, Color outlineColor, std::string& text, int fontSize, Color textColor, float textSpacing, Font font = GetFontDefault());
+	// Draws a Rounded Rectangle with an outline
+	void drawRectRoundedWOutline(Rectangle& rect, float lineThick, Color rectColor, Color outlineColor, float roundness, int segments);
 	// Draws a button using the ButtonClass
 	void drawButton(RaylibAdditions::ButtonClass* button);
 	// Draws all the buttons in a std::unordererd_map

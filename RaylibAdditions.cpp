@@ -10,6 +10,19 @@
 #include <typeinfo>
 #include <math.h>
 
+void RaylibAdditions::ButtonClass::updateState() {
+	if (CheckCollisionPointRec(GetMousePosition(), rect)) {
+		state = 1;
+		if (IsMouseButtonPressed(0)) {
+			state = 2;
+			if(IsSoundValid(pressedSound))
+				PlaySound(pressedSound);
+		}
+	}
+	else
+		state = 0;
+}
+
 void RaylibAdditions::drawTextLeftCenterRect(Rectangle &rect, std::string &text, int fontSize, Color color) {
 	DrawText(text.c_str(),
 		rect.x,
@@ -85,6 +98,11 @@ void RaylibAdditions::drawRectWOutlineWTextCenterTop(Rectangle& rect, float line
 void RaylibAdditions::drawRectWOutlineWText(Rectangle& rect, float lineThick, Color rectColor, Color outlineColor, std::string& text, int fontSize, Color textColor, float textSpacing, Font font) {
 	drawRectWOutline(rect, lineThick, rectColor, outlineColor);
 	drawTextCenterRect(rect, text, fontSize, textSpacing, textColor, font);
+}
+
+void RaylibAdditions::drawRectRoundedWOutline(Rectangle& rect, float lineThick, Color rectColor, Color outlineColor, float roundness, int segments) {
+	DrawRectangleRounded(rect, roundness, segments, rectColor);
+	DrawRectangleRoundedLinesEx(rect, roundness, segments, lineThick, outlineColor);
 }
 
 void RaylibAdditions::drawButton(RaylibAdditions::ButtonClass* button) {
@@ -209,7 +227,7 @@ void RaylibAdditions::DrawClass::pushList(std::variant<Rectangle, DrawStructs::D
 
 std::variant<Rectangle, DrawStructs::DrawTextCenterRectStruct, DrawStructs::DrawRectRectStruct, DrawStructs::DrawTextureStruct> RaylibAdditions::DrawClass::popList() {
 	if (list.empty())
-		return Rectangle();
+		return Rectangle(); // this is dumb, should be null
 
 	std::variant<Rectangle, DrawStructs::DrawTextCenterRectStruct, DrawStructs::DrawRectRectStruct, DrawStructs::DrawTextureStruct> lastItem = list.back();
 	list.pop_back();
