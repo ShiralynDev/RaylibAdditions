@@ -1,5 +1,10 @@
 #pragma once
 
+#define ALIGN_LEFT 0
+#define ALIGN_RIGHT 1
+#define ALIGN_UP 2
+#define ALIGN_DOWN 3
+
 #include <raylib.h>
 #include <string>
 #include <unordered_map>
@@ -136,6 +141,10 @@ namespace RaylibAdditions { // Define functions here
 	void drawRectWOutlineWText(Rectangle& rect, float lineThick, Color rectColor, Color outlineColor, std::string& text, int fontSize, Color textColor, float textSpacing, Font font = GetFontDefault());
 	// Draws a Rounded Rectangle with an outline
 	void drawRectRoundedWOutline(Rectangle& rect, float lineThick, Color rectColor, Color outlineColor, float roundness, int segments);
+	// Draws a line aligned to a direction instead of using the cords as the middle (made for flat lines)
+	void drawLineAligned(Vector2 startPos, Vector2 endPos, float lineThick, Color color, int alignment);
+	// Inserts \n where it is needed
+    std::string formatString(std::string string, int length, int fontSize);
 	// Draws a button using the ButtonClass
 	void drawButton(RaylibAdditions::ButtonClass* button);
 	// Draws all the buttons in a std::unordererd_map

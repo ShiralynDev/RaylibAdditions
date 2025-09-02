@@ -105,6 +105,68 @@ void RaylibAdditions::drawRectRoundedWOutline(Rectangle& rect, float lineThick, 
 	DrawRectangleRoundedLinesEx(rect, roundness, segments, lineThick, outlineColor);
 }
 
+void RaylibAdditions::drawLineAligned(Vector2 startPos, Vector2 endPos, float lineThick, Color color, int alignment) {
+	switch (alignment) {
+	case 0:
+		startPos.x = startPos.x - lineThick / 2;
+		endPos.x = endPos.x - lineThick / 2;
+		break;
+
+	case 1:
+		startPos.x = startPos.x + lineThick / 2;
+		endPos.x = endPos.x + lineThick / 2;
+		break;
+
+	case 2:
+		startPos.y = startPos.y - lineThick / 2;
+		endPos.y = endPos.y - lineThick / 2;
+		break;
+
+	case 3:
+		startPos.y = startPos.y + lineThick / 2;
+		endPos.y = endPos.y + lineThick / 2;
+		break;
+	
+	default:
+		break;
+	}
+
+	DrawLineEx(startPos, endPos, lineThick, color);
+}
+
+std::string RaylibAdditions::formatString(std::string string, int length, int fontSize) { // this code is so dumb
+    std::string modString, modString2;
+    std::string returnString;
+    int processedChars = 0;
+	float currentMultiply = 0.5;
+
+    while (processedChars < string.size()) {
+        modString = string.substr(processedChars);
+		if (MeasureText(modString.c_str(), fontSize) <= length) {
+			returnString.append(modString);
+			processedChars += modString.size();
+		} else {
+			currentMultiply = 0.5;
+			while (MeasureText(modString.c_str(), fontSize) > length) {
+				modString2 = modString.substr(0, modString.size()*currentMultiply);
+				if (MeasureText(modString2.c_str(), fontSize) > length) {
+					modString = modString2;
+				} else { 
+					currentMultiply = currentMultiply + (1 - currentMultiply)/2; // this is prob so dumb but im tired rn
+					if (currentMultiply >= 0.999) // good enough ig
+						break;
+				}
+			}
+			size_t lastSpace = modString.find_last_of(' ');
+			returnString.append(modString.substr(0, lastSpace));
+			returnString.append("\n");
+			processedChars += lastSpace + 1;
+		}
+    }
+    
+    return returnString;
+}
+
 void RaylibAdditions::drawButton(RaylibAdditions::ButtonClass* button) {
 	drawRectWOutlineWText(button->rect, button->outlineThickness, button->color, button->outlineColor, button->text, button->textSize, button->textColor);
 }
