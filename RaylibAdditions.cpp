@@ -23,6 +23,20 @@ void RaylibAdditions::ButtonClass::updateState() {
 		state = 0;
 }
 
+void RaylibAdditions::LoadedButtonClass::drawAndUpdate() {
+	DrawTexture(texture, pos.x, pos.y, WHITE);
+	if (CheckCollisionPointRec(GetMousePosition(), {pos.x, pos.y, float(texture.width), float(texture.height)})) {
+		state = 1;
+		if (IsMouseButtonPressed(0)) {
+			state = 2;
+			if(IsSoundValid(pressedSound))
+				PlaySound(pressedSound);
+		}
+	}
+	else
+		state = 0;
+}
+
 void RaylibAdditions::drawTextLeftCenterRect(Rectangle &rect, std::string &text, int fontSize, Color color) {
 	DrawText(text.c_str(),
 		rect.x,
