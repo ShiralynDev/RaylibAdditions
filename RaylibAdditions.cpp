@@ -29,6 +29,7 @@ bool RaylibAdditions::ButtonClass::updateState(bool useIsMouseDown) {
 	}
 	else
 		state = 0;
+	return false;
 }
 
 bool RaylibAdditions::ButtonClass::drawAndUpdate(bool useIsMouseDown) {
