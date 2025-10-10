@@ -10,18 +10,32 @@
 #include <typeinfo>
 #include <math.h>
 
-void RaylibAdditions::ButtonClass::updateState() {
+void RaylibAdditions::ButtonClass::draw() {
+	drawRectWOutlineWText(this->rect, this->outlineThickness, this->color, this->outlineColor, this->text, this->textSize, this->textColor);
+}
+
+bool RaylibAdditions::ButtonClass::updateState(bool useIsMouseDown) {
 	if (CheckCollisionPointRec(GetMousePosition(), rect)) {
 		state = 1;
-		if (IsMouseButtonPressed(0)) {
+		bool pressed = false;
+		if (useIsMouseDown && IsMouseButtonDown(0)) pressed = true;
+		if (!useIsMouseDown && IsMouseButtonPressed(0)) pressed = true; 
+		if (pressed) {
 			state = 2;
 			if(IsSoundValid(pressedSound))
 				PlaySound(pressedSound);
+			return true;
 		}
 	}
 	else
 		state = 0;
 }
+
+bool RaylibAdditions::ButtonClass::drawAndUpdate(bool useIsMouseDown) {
+	this->draw();
+	return this->updateState(useIsMouseDown);
+}
+
 
 void RaylibAdditions::LoadedButtonClass::drawAndUpdate() {
 	DrawTexture(texture, pos.x, pos.y, WHITE);

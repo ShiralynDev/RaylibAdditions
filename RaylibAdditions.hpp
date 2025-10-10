@@ -47,23 +47,28 @@ namespace RaylibAdditions { // Define classes here
 	class ButtonClass {
 	public:
 		Rectangle rect;
-		std::string text;
-		int textSize;
+		std::string text = "";
+		int textSize = 0;
 		Color color;
 		Color outlineColor;
-		Color textColor;
+		Color textColor = BLACK;
 		int outlineThickness;
 		float scale;
-		// state, 0 = off, 1 = hover, 2 = pressed, 3 = released (only one cycle)
+		// state, 0 = off, 1 = hover, 2 = pressed, 3 = released (only one cycle) // update also returns true on 2
 		int state;
 		//optional sound
 		Sound pressedSound;
 		Sound releasedSound;
 
-		void updateState();
+		void draw();
+		bool updateState(bool useIsMouseDown = false);
+		bool drawAndUpdate(bool useIsMouseDown = false);
 
 		ButtonClass(Rectangle buttonRect, std::string buttonText, int buttonTextSize, Color buttonColor, Color buttonOutlineColor, Color buttonTextColor, int buttonOutlineThickness, float buttonScale, Sound buttonPressedSound = Sound(), Sound buttonReleasedSound = Sound(), int buttonState = 0)
 		: rect(buttonRect), text(buttonText), textSize(buttonTextSize), color(buttonColor), outlineColor(buttonOutlineColor), textColor(buttonTextColor), outlineThickness(buttonOutlineThickness), scale(buttonScale), state(buttonState), pressedSound(buttonPressedSound), releasedSound(buttonReleasedSound) {}
+
+		ButtonClass(Rectangle buttonRect, Color buttonColor, Color buttonOutlineColor, int buttonOutlineThickness, float buttonScale, Sound buttonPressedSound = Sound(), Sound buttonReleasedSound = Sound(), int buttonState = 0)
+		: rect(buttonRect), color(buttonColor), outlineColor(buttonOutlineColor), outlineThickness(buttonOutlineThickness), scale(buttonScale), state(buttonState), pressedSound(buttonPressedSound), releasedSound(buttonReleasedSound) {}
 	};
 
 	class LoadedButtonClass { // rename to like textured button or something
