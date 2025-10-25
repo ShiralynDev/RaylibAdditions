@@ -166,11 +166,9 @@ void RaylibAdditions::Menu::Menu::DrawAndUpdate(Vector2 mousePos) {
 
 
 	int i = 0;
-	if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-
+	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		for (Rectangle& MenuTab : MenuTabs) {
 			if (CheckCollisionPointRec(mousePos, MenuTab) && i != selectedPage) {
-
 				for (auto& element : settings[selectedPage]) { // Close all extended stringlists
                 		if (auto value = std::get_if<stringList>(&element)) {
                 		value->extended = false;
@@ -253,10 +251,67 @@ void RaylibAdditions::Menu::Menu::DrawAndUpdate(Vector2 mousePos) {
 
 			DrawRectangleLinesEx(box, float(entryFontSize) / 10.0f, BLACK);
 			RaylibAdditions::drawTextLeftCenterRect(box, value->items.at(0), 20, BLACK, 10.0f);
+		}
+	}
 
+	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+		i = 0;
+		for (Rectangle& entry : settingsEntry) {
+			if (CheckCollisionPointRec(mousePos, entry)) {
+				auto& settingList = settings.at(selectedPage);
+				auto& it = settingList.at(i);
+
+				if (auto value = std::get_if<toggleBox>(&it)) {
+					if (IsMouseButtonPressed(0)) {
+						value->state = !value->state;
+					}
+				}
+
+				if (auto value = std::get_if<slider>(&it)) {
+					Rectangle collisionRect = value->box;
+					collisionRect.x += (float(entryFontSize) / 10.0f);
+					collisionRect.width -= ((float(entryFontSize) / 10.0f) * 2.0f);
+					if (CheckCollisionPointRec(mousePos, collisionRect)) {
+						value->procentage = 100 / ((value->box.width - ((float(entryFontSize) / 10.0f) * 2)) / ((mousePos.x + 1) - (value->box.x+float(entryFontSize) / 10.0f)) );
+					}
+				}
+
+				if (auto value = std::get_if<stringList>(&it)) {
+					if (IsMouseButtonPressed(0)) {
+						if (value->extended == true) {
+							value->extended = false;
+						} else {
+							bool foundSomethingExtended = false;
+							for (auto &setting : settings.at(selectedPage)) {
+								if (auto valueFound = std::get_if<stringList>(&setting)) {
+									if (valueFound->extended == true) foundSomethingExtended = true; // don't open new if something alredy open, JUST FUCKING REMAKE THIS CODE TWT
+								}
+							}
+							if (!foundSomethingExtended)
+								value->extended = true;
+						}
+					}
+				}
+
+			}
+			i++;
+    	}
+	}
+
+	i = 0;
+	for (auto &setting : settings.at(selectedPage)) {
+		i++;
+		if (auto value = std::get_if<stringList>(&setting)) {
 			if (value->extended) { // All -/+ are to adjust for the selected value being at position 0
 				std::vector<Rectangle> boxes;
 				int amountOfBoxes = value->items.size() - 1; // Rewrite with scrolling later or offer it as diffrent style
+
+				Rectangle box = {
+					settingsEntry.at(i-1).x + MeasureText(settingsEntryText.at(i-1).c_str(), entryFontSize) + 10,
+					settingsEntry.at(i-1).y,
+					float(entryFontSize) * 5.0f,
+					float(entryFontSize)
+				};
 
 				for (int j = 0; j < amountOfBoxes; j++) {
 					Rectangle newBox = box;
@@ -267,13 +322,13 @@ void RaylibAdditions::Menu::Menu::DrawAndUpdate(Vector2 mousePos) {
 				}
 
 				for (int j = 0; j < boxes.size(); j++) {
-					DrawRectangleLinesEx(boxes.at(j), float(entryFontSize) / 10.0f, BLACK);
+					RaylibAdditions::drawRectWOutline(boxes.at(j), float(entryFontSize) / 10.0f, GRAY, BLACK);
 					RaylibAdditions::drawTextLeftCenterRect(boxes.at(j), value->items.at(j + 1), 20, BLACK, 10.0f);
 				}
 
 				if (IsMouseButtonPressed(0)) {
 					for (int j = 0; j < boxes.size(); j++) {
-						if(CheckCollisionPointRec(GetMousePosition(), boxes.at(j))) {
+						if(CheckCollisionPointRec(mousePos, boxes.at(j))) {
 							std::string target = value->items.at(j + 1);
 							value->items.erase(value->items.begin() + j + 1);
 							value->items.insert(value->items.begin(), target);
@@ -281,47 +336,10 @@ void RaylibAdditions::Menu::Menu::DrawAndUpdate(Vector2 mousePos) {
 						}
 					}
 				}
-
 			}
 		}
 	}
 
-	if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-		i = 0;
-		for (Rectangle& entry : settingsEntry) {
-			if (CheckCollisionPointRec(mousePos, entry)) {
-				auto& settingList = settings.at(selectedPage);
-				auto& it = settingList.at(i);
-
-				if (it.index() != settingList.size()) {
-
-					if (auto value = std::get_if<toggleBox>(&it)) {
-						if (IsMouseButtonPressed(0)) {
-							value->state = !value->state;
-						}
-					}
-
-					if (auto value = std::get_if<slider>(&it)) {
-						Rectangle collisionRect = value->box;
-						collisionRect.x += (float(entryFontSize) / 10.0f);
-						collisionRect.width -= ((float(entryFontSize) / 10.0f) * 2.0f);
-						if (CheckCollisionPointRec(mousePos, collisionRect)) {
-							value->procentage = 100 / ((value->box.width - ((float(entryFontSize) / 10.0f) * 2)) / ((mousePos.x + 1) - (value->box.x+float(entryFontSize) / 10.0f)) );
-						}
-					}
-
-					if (auto value = std::get_if<stringList>(&it)) {
-						if (IsMouseButtonPressed(0)) {
-							value->extended = !value->extended;
-						}
-					}
-
-				}
-
-			}
-			i++;
-    	}
-	}
 }
 
 void RaylibAdditions::Menu::Menu::addSettingToPage(std::string page, std::variant<toggleBox, slider, stringList> setting) {
