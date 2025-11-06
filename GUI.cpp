@@ -138,6 +138,20 @@ void RaylibAdditions::RoomClass::drawFrameClass(FrameClass* frame) {
 	}
 }
 
+void RaylibAdditions::Menu::stringList::addEntry(std::string entry, bool mainAkaUsedAkaSelected) {
+	if (mainAkaUsedAkaSelected)
+		items.insert(items.begin(), entry);
+	else
+		items.push_back(entry);
+}
+
+void RaylibAdditions::Menu::stringList::removeEntry(std::string entry) {
+	for (int i = 0; i < items.size(); i++) {
+		if (items.at(i) == entry)
+			items.erase(items.begin() + i);
+	}
+}
+
 // This code looks more trash than my room
 void RaylibAdditions::Menu::Menu::DrawAndUpdate(Vector2 mousePos) {
 	Rectangle MenuBox = {};
@@ -440,6 +454,7 @@ void RaylibAdditions::Menu::Menu::loadSettingsFromFile(std::string path) {
 
 		if (line.find('[') == 0 && line.find(']') == line.size() - 1) {
             page = line.substr(1, line.size() - 2);
+			if (page == "Hidden") return; // Hidden should always be on the end of a settings file, ngl this system is so ass
 			pageTitles.push_back(page);
 			settings.push_back({});
 			continue;

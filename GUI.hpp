@@ -1,3 +1,4 @@
+#pragma once
 #include "RaylibAdditions.hpp"
 
 #include <vector>
@@ -59,6 +60,9 @@ namespace RaylibAdditions {
         class stringList {
             public:
             stringList(std::string entryName, std::vector<std::string> stringList) : name(entryName), items(stringList) {};
+
+            void addEntry(std::string entry, bool mainAkaUsedAkaSelected);
+            void removeEntry(std::string entry);
 
             std::string name;
             std::vector<std::string> items;
