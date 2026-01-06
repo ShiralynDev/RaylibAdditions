@@ -141,6 +141,8 @@ namespace RaylibAdditions { // Define functions here
 	void drawRectWOutlineWTextCenterTop(Rectangle& rect, float lineThick, Color rectColor, Color outlineColor, std::string& text, int fontSize, Color textColor);
 	// Draws a Rectangle with an outline and text using custom text args
 	void drawRectWOutlineWText(Rectangle& rect, float lineThick, Color rectColor, Color outlineColor, std::string& text, int fontSize, Color textColor, float textSpacing, Font font = GetFontDefault());
+	// Draws a rounded Rectangle with an outline and text using custom text args
+	void drawRectRoundedWOutlineWText(Rectangle& rect, float lineThick, Color rectColor, Color outlineColor, std::string& text, int fontSize, Color textColor, float roundness, int segments);
 	// Draws a Rounded Rectangle with an outline
 	void drawRectRoundedWOutline(Rectangle& rect, float lineThick, Color rectColor, Color outlineColor, float roundness, int segments);
 	// Draws a line aligned to a direction instead of using the cords as the middle (made for flat lines)

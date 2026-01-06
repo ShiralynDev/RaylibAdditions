@@ -104,6 +104,11 @@ void RaylibAdditions::drawRectWOutlineWText(Rectangle& rect, float lineThick, Co
 	drawTextCenterRect(rect, text, fontSize, textColor);
 }
 
+void RaylibAdditions::drawRectRoundedWOutlineWText(Rectangle& rect, float lineThick, Color rectColor, Color outlineColor, std::string& text, int fontSize, Color textColor, float roundness, int segments) {
+	drawRectRoundedWOutline(rect, lineThick, rectColor, outlineColor, roundness, segments);
+	drawTextCenterRect(rect, text, fontSize, textColor);
+}
+
 void RaylibAdditions::drawRectWOutlineWTextCenterTop(Rectangle& rect, float lineThick, Color rectColor, Color outlineColor, std::string& text, int fontSize, Color textColor) {
 	drawRectWOutline(rect, lineThick, rectColor, outlineColor);
 	drawTextCenterTopRect(rect, text, fontSize, textColor, lineThick);
