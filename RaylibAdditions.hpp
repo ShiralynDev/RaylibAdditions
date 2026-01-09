@@ -77,7 +77,8 @@ namespace RaylibAdditions { // Define classes here
 		Sound pressedSound;
 		Sound releasedSound;
 
-		void drawAndUpdate();
+		void draw();
+		void update();
 
 		LoadedButtonClass(Texture2D buttonTexture, Vector2 buttonPos, float buttonScale, Sound buttonPressedSound = Sound(), Sound buttonReleasedSound = Sound(), int buttonState = 0)
 		: texture(buttonTexture), pos(buttonPos), scale(buttonScale), state(buttonState), pressedSound(buttonPressedSound), releasedSound(buttonReleasedSound) {}

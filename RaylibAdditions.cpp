@@ -23,8 +23,11 @@ void RaylibAdditions::ButtonClass::updateState() {
 		state = 0;
 }
 
-void RaylibAdditions::LoadedButtonClass::drawAndUpdate() {
+void RaylibAdditions::LoadedButtonClass::draw() {
 	DrawTexture(texture, pos.x, pos.y, WHITE);
+}
+
+void RaylibAdditions::LoadedButtonClass::update() {
 	if (CheckCollisionPointRec(GetMousePosition(), {pos.x, pos.y, float(texture.width), float(texture.height)})) {
 		state = 1;
 		if (IsMouseButtonPressed(0)) {
