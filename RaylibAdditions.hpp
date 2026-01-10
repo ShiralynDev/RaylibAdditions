@@ -34,7 +34,7 @@ namespace RaylibAdditions { // Define classes here
 		};
 
 		~WindowClass() {
-			CloseWindow();
+			if (IsWindowReady()) CloseWindow();
 		}
 
 		void updateWindow() {
