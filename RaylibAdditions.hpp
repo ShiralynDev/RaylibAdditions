@@ -61,6 +61,7 @@ namespace RaylibAdditions { // Define classes here
 		Sound releasedSound;
 
 		void updateState();
+		void draw();
 
 		ButtonClass(Rectangle buttonRect, std::string buttonText, int buttonTextSize, Color buttonColor, Color buttonOutlineColor, Color buttonTextColor, int buttonOutlineThickness, float buttonScale, Sound buttonPressedSound = Sound(), Sound buttonReleasedSound = Sound(), int buttonState = 0)
 		: rect(buttonRect), text(buttonText), textSize(buttonTextSize), color(buttonColor), outlineColor(buttonOutlineColor), textColor(buttonTextColor), outlineThickness(buttonOutlineThickness), scale(buttonScale), state(buttonState), pressedSound(buttonPressedSound), releasedSound(buttonReleasedSound) {}
