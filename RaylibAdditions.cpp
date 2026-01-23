@@ -23,6 +23,10 @@ void RaylibAdditions::ButtonClass::updateState() {
 		state = 0;
 }
 
+void RaylibAdditions::ButtonClass::draw() {
+	drawRectWOutlineWText(this->rect, this->outlineThickness, this->color, this->outlineColor, this->text, this->textSize, this->textColor);
+}
+
 void RaylibAdditions::LoadedButtonClass::draw() {
 	DrawTexture(texture, pos.x, pos.y, WHITE);
 }
