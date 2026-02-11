@@ -131,10 +131,10 @@ namespace RaylibAdditions { // Define functions here
 	void drawTextLeftCenterRect(Rectangle& rect, std::string& text, int fontSize, Color color);
 	void drawTextLeftCenterRect(Rectangle &rect, std::string &text, int fontSize, Color color, float xOffset);
 	// Draws text in the X center of a Rectangle and to the Y top in the Rectangle
-	void drawTextCenterTopRect(Rectangle& rect, std::string& text, int fontSize, Color color);
-	void drawTextCenterTopRect(Rectangle& rect, std::string& text, int fontSize, Color color, int topOffset);
+	void drawTextCenterTopRect(Rectangle& rect, std::string& text, int fontSize, Color color, Font font = GetFontDefault());
+	void drawTextCenterTopRect(Rectangle& rect, std::string& text, int fontSize, Color color, int topOffset, Font font = GetFontDefault());
 	// Draws text in the center of a Rectangle 
-	void drawTextCenterRect(Rectangle& rect, std::string& text, int fontSize, Color color);
+	void drawTextCenterRect(Rectangle& rect, std::string& text, int fontSize, Color color, Font font = GetFontDefault());
 	// Draws text in the center of Rectangle custom text args
 	void drawTextCenterRect(Rectangle& rect, std::string& text, int fontsize, float spacing, Color tint, Font font = GetFontDefault());
 	// Draws a Rectangle with an outline
@@ -153,6 +153,8 @@ namespace RaylibAdditions { // Define functions here
 	void drawLineAligned(Vector2 startPos, Vector2 endPos, float lineThick, Color color, int alignment);
 	// Inserts \n where it is needed
     std::string formatString(std::string string, int length, int fontSize);
+	// Measures text scaled to fontSize regardless of font baseSize
+	Vector2 MeasureTextScaled(Font font, const char* text, float fontSize, float spacing);
 	// Draws a button using the ButtonClass
 	void drawButton(RaylibAdditions::ButtonClass* button);
 	// Draws all the buttons in a std::unordererd_map

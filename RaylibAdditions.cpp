@@ -62,39 +62,53 @@ void RaylibAdditions::drawTextLeftCenterRect(Rectangle &rect, std::string &text,
 		);
 }
 
-void RaylibAdditions::drawTextCenterTopRect(Rectangle &rect, std::string &text, int fontSize, Color color) {
-	DrawText(text.c_str(),
-		(rect.x + rect.width / 2) - MeasureText(text.c_str(), fontSize) / 2,
-		rect.y, 
+void RaylibAdditions::drawTextCenterTopRect(Rectangle &rect, std::string &text, int fontSize, Color color, Font font) {
+	float spacing = fontSize / 10.0f;
+	Vector2 textSize = MeasureTextEx(font, text.c_str(), fontSize, spacing);
+
+	DrawTextEx(font, 
+		text.c_str(),
+		{(rect.x + rect.width / 2) - textSize.x / 2, rect.y}, 
 		fontSize,
+		spacing,
 		color
 		);
 }
 
-void RaylibAdditions::drawTextCenterTopRect(Rectangle &rect, std::string &text, int fontSize, Color color, int topOffset) {
-	DrawText(text.c_str(),
-		(rect.x + rect.width / 2) - MeasureText(text.c_str(), fontSize) / 2,
-		rect.y + topOffset, 
+void RaylibAdditions::drawTextCenterTopRect(Rectangle &rect, std::string &text, int fontSize, Color color, int topOffset, Font font) {
+	float spacing = fontSize / 10.0f;
+	Vector2 textSize = MeasureTextEx(font, text.c_str(), fontSize, spacing);
+
+	DrawTextEx(font,
+		text.c_str(),
+		{(rect.x + rect.width / 2) - textSize.x / 2, rect.y + topOffset}, 
 		fontSize,
+		spacing,
 		color
 		);
 }
 
 
-void RaylibAdditions::drawTextCenterRect(Rectangle &rect, std::string &text, int fontSize, Color color) {
-	DrawText(text.c_str(),
-		(rect.x + rect.width / 2) - MeasureText(text.c_str(), fontSize) / 2,
-		(rect.y + rect.height / 2) - fontSize / 2, 
+void RaylibAdditions::drawTextCenterRect(Rectangle &rect, std::string &text, int fontSize, Color color, Font font) {
+	float spacing = fontSize / 10.0f;
+	Vector2 textSize = MeasureTextEx(font, text.c_str(), fontSize, spacing);
+
+	DrawTextEx(font, 
+		text.c_str(),
+		{(rect.x + rect.width / 2) - textSize.x / 2, (rect.y + rect.height / 2) - textSize.y / 2},
 		fontSize,
+		spacing,
 		color
 		);
 }
 
 void RaylibAdditions::drawTextCenterRect(Rectangle& rect, std::string& text, int fontsize, float spacing, Color tint, Font font) {
+	Vector2 textSize = MeasureTextEx(font, text.c_str(), fontsize, spacing);
+
 	DrawTextEx(font,
 		text.c_str(),
-		{ (rect.x + rect.width / 2) - MeasureTextEx(font, text.c_str(), fontsize, spacing).x / 2, 
-		(rect.y + rect.height / 2) + MeasureTextEx(font, text.c_str(), fontsize, spacing).y / 2},
+		{ (rect.x + rect.width / 2) - textSize.x / 2, 
+		(rect.y + rect.height / 2) + textSize.y / 2},
 		fontsize,
 		spacing,
 		tint
