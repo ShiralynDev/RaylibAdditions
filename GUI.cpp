@@ -511,8 +511,7 @@ void RaylibAdditions::Menu::Menu::saveSettingsToFile() {
 
 	}
 
-	if (iniFile.generate(iniData))
-	; // fuck u for having nodiscard here, not like imma care. take that 🖕🖕🖕
+	iniFile.generate(iniData);
 }
 
 int RaylibAdditions::Menu::Menu::getSliderInt(const std::string& page, const std::string& name) {
