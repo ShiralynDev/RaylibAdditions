@@ -1,6 +1,9 @@
 #pragma once
 #include "RaylibAdditions.hpp"
 
+#include "extern/mINI/src/mini/ini.h"
+
+#include <filesystem>
 #include <vector>
 #include <raylib.h>
 #include <variant>
@@ -72,26 +75,30 @@ namespace RaylibAdditions {
         class Menu {
                 bool centered = false;
                 float xPos, yPos = 0;
-                std::vector<std::string> pageTitles;
                 int selectedPage = 0;
                 Vector2 menuSize {500, 500};
                 std::vector<std::vector<std::variant<toggleBox, slider, stringList>>> settings; // Name, type
+                mINI::INIFile iniFile;
 
             public:
-                Menu(bool center, std::vector<std::string> pageNames = {}, Vector2 size = {800, 800}, float x = 0, float y = 0) : centered(center), pageTitles(pageNames), menuSize(size), xPos(x), yPos(y) {
-                    for (int i = 0; i < pageNames.size(); i++) {
-                        this->settings.push_back({});
-                    }
+                Menu(bool center, std::string IniFile, Vector2 size = {800, 800}, float x = 0, float y = 0) : centered(center), iniFile(IniFile), menuSize(size), xPos(x), yPos(y) {
+                    if (!std::filesystem::exists(IniFile))
+                    iniFile = {IniFile};
                 };
 
-
-                void loadSettingsFromFile(std::string path);
-                void saveSettingsToFile(std::string path);
+                void loadSettingsFromFile();
+                void saveSettingsToFile();
                 void addSettingToPage(std::string page, std::variant<toggleBox, slider, stringList> setting);
                 void removeSettingFromPage(std::string page, std::string name);
                 void setSettingAtPage(std::string page, std::string name, std::variant<toggleBox, slider, stringList> setting);
+
+                int getSliderInt(const std::string& page, const std::string& name);
+                std::string getStringlistString(const std::string& page, const std::string& name);
+                bool getToggleBoxBool(const std::string& page, const std::string& name);
+
                 std::variant<toggleBox, slider, stringList>* getVariant(std::string page, std::string name);
 
+                std::vector<std::string> pageTitles; // do not modify
                 int titleFontSize = 20;
                 int entryFontSize = 40;
                 int outlineThickness = 10;
@@ -101,10 +108,9 @@ namespace RaylibAdditions {
                 Color textColor = BLACK;
                 bool shown = false;
 
-                void DrawAndUpdate(Vector2 mousePos = GetMousePosition());
+                void Update(Vector2 mousePos = GetMousePosition());
+                void Draw();
         };
-
-        std::unordered_map<std::string, std::variant<bool, int, std::string>> loadSettingsFromFileToMap(std::string path); // For loading to game not as a menu but applied setting
     }
 
     class ScrollingMenu {

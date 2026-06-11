@@ -1,11 +1,16 @@
 #include "GUI.hpp"
 
 #include "Functions.hpp"
+#include "extern/mINI/src/mini/ini.h"
+#include "raylib.h"
 
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <unordered_map>
 #include <algorithm>
+#include <variant>
+#include <vector>
 
 RaylibAdditions::LoadedRoomClass RaylibAdditions::RoomClass::loadRoom(std::string path, std::string fileName) {
     std::ifstream file;
@@ -153,7 +158,7 @@ void RaylibAdditions::Menu::stringList::removeEntry(std::string entry) {
 }
 
 // This code looks more trash than my room
-void RaylibAdditions::Menu::Menu::DrawAndUpdate(Vector2 mousePos) {
+void RaylibAdditions::Menu::Menu::Update(Vector2 mousePos) {
 	Rectangle MenuBox = {};
 	if (centered) {
 		MenuBox.x = (GetScreenWidth() / 2) - (menuSize.x / 2);
@@ -356,10 +361,17 @@ void RaylibAdditions::Menu::Menu::DrawAndUpdate(Vector2 mousePos) {
 
 }
 
+void RaylibAdditions::Menu::Menu::Draw() {
+	Update(GetMousePosition()); // illusion of choice
+}
+
 void RaylibAdditions::Menu::Menu::addSettingToPage(std::string page, std::variant<toggleBox, slider, stringList> setting) {
 	for (int i = 0; i < pageTitles.size(); i++) {
-		if (pageTitles.at(i) == page)
+		if (pageTitles.at(i) == page) {
+			if (settings.size() < i+1) // this sucks cus it needs atleast one setting per page
+				settings.push_back(std::vector<std::variant<toggleBox, slider, stringList>>{});
 			settings.at(i).push_back(setting);
+		}
 	}
 }
 
@@ -439,143 +451,101 @@ std::variant<RaylibAdditions::Menu::toggleBox, RaylibAdditions::Menu::slider, Ra
 	return nullptr;
 }
 
-void RaylibAdditions::Menu::Menu::loadSettingsFromFile(std::string path) {
-	std::ifstream settingsFile(path);
+void RaylibAdditions::Menu::Menu::loadSettingsFromFile() {
+	mINI::INIStructure iniData;
+	iniFile.read(iniData);
 
-	if (!settingsFile.is_open()) {
-		std::cerr << "Could not find file: " << path << std::endl;
-		return;
+	for (auto const& it : iniData) {
+		auto const& section = it.first;
+		pageTitles.push_back(section);
+
+		auto const& collection = it.second;
+		for (auto const& it2 : collection) {
+			auto const& key = it2.first;
+			auto const& value = it2.second;
+
+			std::vector<std::string> valueParts = functions::splitString(value, "|");
+			if (valueParts.at(0) == "toggleBox") {
+				toggleBox newToggleBox{key, functions::stringToBool(valueParts.at(1))};
+				addSettingToPage(section, newToggleBox);
+			} else if (valueParts.at(0) == "stringList") {
+				stringList newStringList{ key, {} };
+				valueParts.erase(valueParts.begin()); // remove type
+				newStringList.items = valueParts;
+				addSettingToPage(section, newStringList);
+			} else if (valueParts.at(0) == "slider") {
+				slider newSlider{key, std::stoi(valueParts.at(1))};
+				addSettingToPage(section, newSlider);
+			}
+			
+		}
 	}
-
-	std::string line;
-	std::string page;
-	while ( getline(settingsFile, line) ) {
-    	std::cout << line << '\n';
-
-		if (line.find('[') == 0 && line.find(']') == line.size() - 1) {
-            page = line.substr(1, line.size() - 2);
-			if (page == "Hidden") return; // Hidden should always be on the end of a settings file, ngl this system is so ass
-			pageTitles.push_back(page);
-			settings.push_back({});
-			continue;
-        }
-
-		std::vector<std::string> data = functions::splitString(line, " | "); // data[2] is the value
-		data[0].erase(std::remove(data[0].begin(), data[0].end(), ' '), data[0].end());
-
-		if(data[0] == "toggleBox") {
-			if (data[2] == "true")
-				addSettingToPage(page, RaylibAdditions::Menu::toggleBox(data[1], true));
-			else
-				addSettingToPage(page, RaylibAdditions::Menu::toggleBox(data[1], false));
-		}
-
-		else if (data[0] == "slider") 
-			addSettingToPage(page, RaylibAdditions::Menu::slider(data[1], std::stoi(data[2])));
-
-		else if (data[0] == "stringList") {
-			std::vector<std::string> stringList = functions::splitString(data[2], ", ");
-			addSettingToPage(page, RaylibAdditions::Menu::stringList(data[1], stringList) );
-		}
-
-    }
-    settingsFile.close();
 }
 
-std::unordered_map<std::string, std::variant<bool, int, std::string>> RaylibAdditions::Menu::loadSettingsFromFileToMap(std::string path) {
-	std::ifstream settingsFile(path);
+void RaylibAdditions::Menu::Menu::saveSettingsToFile() {
+	
+	mINI::INIStructure iniData;
 
-	std::unordered_map<std::string, std::variant<bool, int, std::string>> returnMap;
+	for (int i = 0; i < pageTitles.size(); i++)  {
+		
+		for (auto& setting : settings.at(i)) {
+			if (const auto newToggleBox = std::get_if<toggleBox>(&setting)) {
+				iniData[pageTitles.at(i)][newToggleBox->name] = "toggleBox|" + std::to_string(newToggleBox->state);
+			} else if (const auto newStringList = std::get_if<stringList>(&setting)) {
+				std::string stringOfItems = "";
 
-	if (!settingsFile.is_open()) {
-		std::cerr << "Could not find file: " << path << std::endl;
-		return returnMap; // Exit like nothing happend and the rest of the program will just have to enjoy and empty map :)
-	}
-
-	std::string line;
-	while ( getline(settingsFile, line) ) {
-    	std::cout << line << '\n';
-
-		if (line.find('[') == 0 && line.find(']') == line.size() - 1) { // Page name
-			continue;
-        }
-
-		std::vector<std::string> data = functions::splitString(line, " | "); // data[2] is the value
-		data[0].erase(std::remove(data[0].begin(), data[0].end(), ' '), data[0].end());
-
-		if(data[0] == "toggleBox") {
-			if (data[2] == "true")
-				returnMap.emplace(data[1], true);
-			else
-				returnMap.emplace(data[1], false);
-		}
-
-		else if (data[0] == "slider") 
-			returnMap.emplace(data[1], std::stoi(data[2]));
-
-		else if (data[0] == "stringList") {
-			std::vector<std::string> stringList = functions::splitString(data[2], ", ");
-			returnMap.emplace(data[1], stringList.at(0));
-		}
-
-    }
-
-    settingsFile.close();
-	return returnMap;
-}
-
-
-void RaylibAdditions::Menu::Menu::saveSettingsToFile(std::string path) {
-	std::ofstream settingsFile(path);
-
-	if (!settingsFile.is_open()) {
-		std::cerr << "Could not find file: " << path << std::endl;
-		return;
-	}
-
-	for (int i = 0; i < pageTitles.size(); i++) {
-		if (i != 0)
-			settingsFile << "\n";
-		settingsFile << "[" << pageTitles.at(i) << "]" << std::endl;
-		for (int j = 0; j < settings.at(i).size(); j++) {
-
-			std::string type = "";
-			std::string name = "";
-			std::string data = "";
-
-			if (std::holds_alternative<RaylibAdditions::Menu::toggleBox>(settings.at(i).at(j))) {
-				auto& box = std::get<RaylibAdditions::Menu::toggleBox>(settings.at(i).at(j));
-				type = "toggleBox";
-				name = box.name;
-				if (box.state == true)
-					data = "true";
-				else
-					data = "false";
-			}
-			if (std::holds_alternative<RaylibAdditions::Menu::slider>(settings.at(i).at(j))) {
-				auto& slider = std::get<RaylibAdditions::Menu::slider>(settings.at(i).at(j));
-				type = "slider";
-				name = slider.name;
-				data = std::to_string(slider.procentage);
-			}
-
-			if (std::holds_alternative<RaylibAdditions::Menu::stringList>(settings.at(i).at(j))) {
-				auto& stringList = std::get<RaylibAdditions::Menu::stringList>(settings.at(i).at(j));
-				type = "stringList";
-				name = stringList.name;
-
-				for (int k = 0; k < stringList.items.size(); k++) {
-					data += stringList.items.at(k);
-					if (k != stringList.items.size() - 1)
-						data += ", ";
+				for (int j = 0; j < newStringList->items.size(); j++) {
+					if (j == 0)
+						stringOfItems += "stringList|" + newStringList->items.at(j) + "|";
+					else if (j == newStringList->items.size()-1)
+						stringOfItems += newStringList->items.at(j);
+					else
+						stringOfItems += newStringList->items.at(j) + "|";
 				}
-			}
 
-			settingsFile << "   " << type << " | " << name << " | " << data << std::endl;
+				iniData[pageTitles.at(i)][newStringList->name] = stringOfItems;
+			} else if (const auto newSlider = std::get_if<slider>(&setting)) {
+				iniData[pageTitles.at(i)][newSlider->name] = "slider|" + std::to_string(newSlider->procentage);
+			}
 		}
+
 	}
 
-    settingsFile.close();
+	if (iniFile.generate(iniData))
+	; // fuck u for having nodiscard here, not like imma care. take that 🖕🖕🖕
+}
+
+int RaylibAdditions::Menu::Menu::getSliderInt(const std::string& page, const std::string& name) {
+        auto* value = getVariant(page, name);
+        if (!value) return 0;
+
+        if (auto* s = std::get_if<slider>(value))
+            return s->procentage;
+
+        return 0;
+    }
+
+std::string RaylibAdditions::Menu::Menu::getStringlistString(const std::string& page, const std::string& name) {
+	auto* value = getVariant(page, name);
+	if (!value) return "";
+
+	if (auto* l = std::get_if<stringList>(value))
+	{
+		if (!l->items.empty())
+			return l->items[0];
+	}
+
+	return "";
+}
+
+bool RaylibAdditions::Menu::Menu::getToggleBoxBool(const std::string& page, const std::string& name) {
+	auto* value = getVariant(page, name);
+	if (!value) return false;
+
+	if (auto* t = std::get_if<toggleBox>(value))
+		return t->state;
+
+	return false;
 }
 
 int RaylibAdditions::ScrollingMenu::drawAndUpdate(Sound* optionChangeSound, int gamepad, bool drawWithoutUpdate) {

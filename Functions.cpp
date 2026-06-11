@@ -1,4 +1,5 @@
 #include "Functions.hpp"
+#include <cctype>
 
 bool functions::stringIsInt(std::string string) {
     if (string.length() == 0) 
@@ -25,4 +26,19 @@ std::vector<std::string> functions::splitString(std::string string, std::string 
         modString = modString.substr(modString.find(seperator) + seperator.size(), modString.length());
     }
     return returnString;
+}
+
+bool functions::stringToBool(std::string string) {
+    if (string == "1")
+        return true;
+    if (string == "0")
+        return false;
+
+    for (auto& charcther : string) {
+        charcther = tolower(charcther);
+    }
+
+    if (string == "true")
+        return true;
+    return false;
 }
